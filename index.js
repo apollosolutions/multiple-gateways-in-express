@@ -84,7 +84,17 @@ app.use(async (req, res, next) => {
     const middleware = await makeGateway(graphRef);
     middleware(req, res, next);
   } else {
-    res.send("Set the x-graphref header to specify the graph you want to use");
+    if (req.header("content-type")?.startsWith("application/json")) {
+      res.json({
+        data: schemaForError(
+          "Set the x-graphref header to specify the graph you want to use"
+        ),
+      });
+    } else {
+      res.redirect(
+        "https://studio.apollographql.com/sandbox/explorer?endpoint=http://localhost:4000/graphql"
+      );
+    }
   }
 });
 
